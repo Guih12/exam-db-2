@@ -112,9 +112,13 @@ CREATE TABLE IF NOT EXISTS deaths(
     date_death TEXT,
 	gender_id  INTEGER,
     race_id    INTEGER,
+    schooling_in_year_id INTEGER,
+    marital_status_id    INTEGER,
     code_city_of_birth_id     INTEGER,
     code_city_of_residence_id INTEGER,
     code_city_of_death_id     INTEGER,
+    FOREIGN KEY (schooling_in_year_id)      REFERENCES schooling_in_years(id),
+    FOREIGN KEY (marital_status_id)         REFERENCES marital_status(id),
     FOREIGN KEY (gender_id)                 REFERENCES genders(id),
     FOREIGN KEY (race_id)                   REFERENCES races(id), 
     FOREIGN KEY (code_city_of_birth_id)     REFERENCES code_cities (id),
@@ -329,12 +333,15 @@ as
 $$
 declare
 begin
- 	INSERT INTO deaths(type_death, date_death, gender_id, race_id, code_city_of_birth_id, code_city_of_residence_id, code_city_of_death_id)
+ 	INSERT INTO deaths(type_death, date_death, gender_id, race_id, schooling_in_year_id, 
+	marital_status_id, code_city_of_birth_id, code_city_of_residence_id, code_city_of_death_id)
 	SELECT 
 		tipobito::integer as type_death,
 		dtobito  as date_death,
 		(SELECT id as gender_id FROM genders WHERE code = obitos_temp.sexo::integer),
         (SELECT id as race_id 	FROM RACES 	 WHERE id = obitos_temp.racacor::integer),
+        (SELECT id as schooling_in_year_id      FROM schooling_in_years WHERE id = obitos_temp.esc::integer),
+        (SELECT id as marital_status_id         FROM marital_status WHERE id = obitos_temp.estciv::integer),
 		(SELECT id as code_city_of_birth_id     FROM code_cities WHERE code = obitos_temp.codmunnatu LIMIT 1),
 		(SELECT id as code_city_of_residence_id FROM code_cities WHERE code = obitos_temp.codmunres	 LIMIT 1),
 		(SELECT id as code_city_of_death_id     FROM code_cities WHERE code = obitos_temp.codmunocor LIMIT 1)
@@ -355,4 +362,3 @@ SELECT build_races();
 SELECT build_marital_status();
 SELECT build_schooling_in_years();
 SELECT build_table_deaths();
-
