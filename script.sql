@@ -126,6 +126,7 @@ CREATE TABLE IF NOT EXISTS deaths(
     FOREIGN KEY (code_city_of_death_id)     REFERENCES code_cities (id)
 );
 
+COPY obitos_temp FROM 'C:\mortalidade_2018.csv' DELIMITER ',' CSV HEADER;
 
 COPY obitos_temp FROM 'C:\mortalidade_2019.csv' DELIMITER ',' CSV HEADER;
 
